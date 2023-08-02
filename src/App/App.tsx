@@ -12,7 +12,7 @@ function App() {
   const { data, error, isFetching } = useQuery({
     queryKey: ['tasks'],
     queryFn: async (): Promise<Task[]> => {
-      const { data } = await axios.get('http://localhost:4000/tasks')
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/tasks`)
       return data
     },
   })

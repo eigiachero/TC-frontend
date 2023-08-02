@@ -19,7 +19,7 @@ export const TaskRow = ({
   const queryClient = useQueryClient()
   const mutation = useMutation({
     mutationFn: () => {
-      return axios.delete(`http://localhost:4000/tasks/${task.id}`)
+      return axios.delete(`${import.meta.env.VITE_API_URL}/tasks/${task.id}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
@@ -32,7 +32,7 @@ export const TaskRow = ({
         <div className="flex gap-4">
           <h1 className="text-xl font-medium">{task.name}</h1>
           <p className="text-s font-light my-auto text-slate-500">
-            {task.createdAt} {new Date(task.createdAt).valueOf()}
+            {task.createdAt}
           </p>
         </div>
         <p className="text-xl">{task.description}</p>

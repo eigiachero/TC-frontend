@@ -47,9 +47,12 @@ export const TaskForm = ({ data, boardName, close }: TaskFormProps) => {
   const mutation = useMutation({
     mutationFn: (newTask: TaskInput) => {
       if (data === undefined)
-        return axios.post('http://localhost:4000/tasks', newTask)
+        return axios.post(`${import.meta.env.VITE_API_URL}/tasks`, newTask)
 
-      return axios.put(`http://localhost:4000/tasks/${data.id}`, newTask)
+      return axios.put(
+        `${import.meta.env.VITE_API_URL}/tasks/${data.id}`,
+        newTask
+      )
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
@@ -67,7 +70,6 @@ export const TaskForm = ({ data, boardName, close }: TaskFormProps) => {
   })
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values)
     mutation.mutate(values)
   }
 

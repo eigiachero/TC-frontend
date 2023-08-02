@@ -31,7 +31,6 @@ export const TaskList = ({ name, tasks }: TaskListProps) => {
     if (tasks === undefined) return
     const [by, asc] = orderBy.split('-')
 
-    console.log(by == 'name')
     const ordered =
       by == 'name'
         ? Array.from(tasks).sort((t1, t2) => t1.name.localeCompare(t2.name))
