@@ -1,10 +1,18 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faL, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Task } from './types'
 import { TaskRow } from './Task'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Modal from 'react-modal'
-import { TaskInput } from './TaskInput'
+import { TaskForm } from './TaskForm'
+import ReactModal from 'react-modal'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 type TaskListProps = {
   name: string
@@ -12,49 +20,76 @@ type TaskListProps = {
   isLoading: boolean
 }
 
-const customStyles = {
-  content: {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    height: '400px',
-    opacity: '1',
-  },
-  overlay: {
-    background: 'hsla(252, 18%, 22%, 0.5)',
-  },
-}
+ReactModal.setAppElement('#root')
 
-export const TaskList = ({ name, tasks, isLoading }: TaskListProps) => {
+export const TaskList = ({ name, tasks }: TaskListProps) => {
   const [IsModalOpen, setIsOpen] = useState(false)
+  const [orderBy, setOrderBy] = useState('date-desc')
+  const [orderedTasks, setOrderedTasks] = useState<Task[]>([])
+
+  useEffect(() => {
+    if (tasks === undefined) return
+    const [by, asc] = orderBy.split('-')
+
+    console.log(by == 'name')
+    const ordered =
+      by == 'name'
+        ? Array.from(tasks).sort((t1, t2) => t1.name.localeCompare(t2.name))
+        : Array.from(tasks).sort(
+            (t1, t2) =>
+              new Date(t1.createdAt).valueOf() -
+              new Date(t2.createdAt).valueOf()
+          )
+
+    if (asc == 'up') ordered.reverse()
+
+    setOrderedTasks(ordered)
+  }, [tasks, orderBy])
 
   return (
     <div>
       <div className="flex justify-between align-middle border-b-2 border-black py-2 pr-4 my-4">
         <h2 className="text-3xl">{name}</h2>
-        <button onClick={() => setIsOpen(true)}>
-          <FontAwesomeIcon
-            icon={faPlus}
-            className="my-auto h-[24px]"
-            style={{ color: 'hsl(var(--primary))' }}
-          />
-        </button>
+        <div className="flex flex-row-reverse gap-2">
+          <button onClick={() => setIsOpen(true)}>
+            <FontAwesomeIcon
+              icon={faPlus}
+              className="my-auto h-[24px]"
+              style={{ color: 'hsl(var(--primary))' }}
+            />
+          </button>
+
+          <Select
+            defaultValue="date-desc"
+            value={orderBy}
+            onValueChange={(value) => setOrderBy(value)}
+          >
+            <SelectTrigger className="w-[180px] bg-slate-50">
+              <SelectValue placeholder="Ordenar por" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name-desc">Nombre ↓ </SelectItem>
+              <SelectItem value="name-up">Nombre ↑ </SelectItem>
+              <SelectItem value="date-desc">Fecha ↓ </SelectItem>
+              <SelectItem value="date-up">Fecha ↑ </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <Modal
           isOpen={IsModalOpen}
           onRequestClose={() => setIsOpen(false)}
-          style={customStyles}
+          overlayClassName="Overlay"
+          className="Modal"
         >
-          <TaskInput boardName={name} close={() => setIsOpen(false)} />
+          <TaskForm boardName={name} close={() => setIsOpen(false)} />
         </Modal>
       </div>
       <div>
         <ul>
-          {isLoading ? (
-            <p>Recuperando tareas</p>
-          ) : (
-            tasks?.map((task: Task) => <TaskRow task={task} key={task.id} />)
-          )}
+          {orderedTasks?.map((task: Task) => (
+            <TaskRow task={task} boardName={name} key={task.id} />
+          ))}
         </ul>
       </div>
     </div>
