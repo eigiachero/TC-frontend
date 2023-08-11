@@ -6,8 +6,9 @@ componentes para el diseño de la interfaz de usuario
 
 # Instalación
 - Clonar el repositorio de github
-- Clonar e instalar el [backend](https://github.com/eigiachero/TC-backend)
-- Ejecutar el comando `npm run dev`
+- Clonar, instalar y ejecutar el [backend](https://github.com/eigiachero/TC-backend)
+- Instalar las dependecias, utilizando el comando `npm install`
+- Ejecutar frontend, mediante el comando `npm run dev`
 - Abrir el enlace que aparece en la consola!
 
 ### Demo online
